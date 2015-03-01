@@ -25,12 +25,17 @@
     var geocoder = L.mapbox.geocoder('mapbox.places'),
         map = L.mapbox.map('map', 'rishantd.lbc55bee').setView([38.50, -98.35], 5);
         
-        geocoder.query('98112', showMap);
+        var zip = new Array('60112','98112','54001') 
         
-        function showMap(err, data) {
+        for (i = 0; i < zip.length; i++)
+        {
+            geocoder.query(zip[i], showMap);
+        
+            function showMap(err, data) {
 
-            L.circle([data.latlng[0], data.latlng[1]], 1000).addTo(map);
+                L.circle([data.latlng[0], data.latlng[1]], 1000).addTo(map);
 
+            }   
         }
         
     </script>
