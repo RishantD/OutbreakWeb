@@ -23,6 +23,9 @@
 
 <body>
 
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
     <style>
         .search-ui {
             position:absolute;
@@ -62,27 +65,36 @@
     </div>
     
     <script>
-    L.mapbox.accessToken = 'pk.eyJ1IjoicmlzaGFudGQiLCJhIjoidEk0dGdZYyJ9.-ZMFVJwFh4HSYZMYHee7Gw';
-    var geocoder = L.mapbox.geocoder('mapbox.places'),
+        L.mapbox.accessToken = 'pk.eyJ1IjoicmlzaGFudGQiLCJhIjoidEk0dGdZYyJ9.-ZMFVJwFh4HSYZMYHee7Gw';
+        var geocoder = L.mapbox.geocoder('mapbox.places'),
         map = L.mapbox.map('map', 'rishantd.lbc55bee').setView([38.50, -98.35], 5);
         
-        var zip = new Array('60112','98112','54001') 
+        var zip = new Array('60112','60103','63120'); 
         
-        for (i = 0; i < zip.length; i++)
-        {
-            geocoder.query(zip[i], showMap);
-        
-            function showMap(err, data) {
+        var markers = new L.MarkerClusterGroup();
 
-                L.circle([data.latlng[0], data.latlng[1]], 10000, {
+        map.removeLayer(markers);
+        for (var i = 0; i < zip.length; i++) {
+            geocoder.query(zip[i], showMap);
+            
+            function showMap(err, data) {
+                var marker = L.circle([data.latlng[0], data.latlng[1]], 5000, {
                     color: 'red',
                     fillColor: '#f03',
                     fillOpacity: 0.5
-                }).addTo(map);
-
-            }   
+                });
+//                var marker = L.marker([data.latlng[0],data.latlng[1]], {
+//                icon: L.mapbox.marker.icon({'marker-symbol': 'circle', 'marker-color': '000000'}),
+//                });
+                markers.addLayer(marker);   
+            }
         }
+
+        map.addLayer(markers);
         
+        map.removeLayer(markers);
+        
+
     </script>
     
     
