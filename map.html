@@ -19,28 +19,20 @@
 <body>
     
     <div id='map'></div>
+    
     <script>
     L.mapbox.accessToken = 'pk.eyJ1IjoicmlzaGFudGQiLCJhIjoidEk0dGdZYyJ9.-ZMFVJwFh4HSYZMYHee7Gw';
-    var map = L.mapbox.map('map', 'rishantd.lbc55bee')
-        .setView([40, -74.50], 9);
+    var geocoder = L.mapbox.geocoder('mapbox.places'),
+        map = L.mapbox.map('map', 'rishantd.lbc55bee').setView([38.50, -98.35], 5);
         
-        L.circle([40, -74.50], 779).addTo(map);
-        L.circle([40, -74.50], 979).addTo(map);
+        geocoder.query('98112', showMap);
         
-//        for (i = 0; i < lats.length; i++)
-//            {
-//
-//                var marker = L.marker([lats[i], longs[i]], {
-//                    icon: L.mapbox.marker.icon({
-//                        'marker-color': '#E80000'
-//                    })
-//                })
-//                .bindPopup('<button class="trigger">' + FacName[i] + '</button>')
-//                .addTo(map);
-//                L.circleMarker([lats[i], longs[i]], value[i])
-//                .addTo(map);
-//
-//            }
+        function showMap(err, data) {
+
+            L.circle([data.latlng[0], data.latlng[1]], 1000).addTo(map);
+
+        }
+        
     </script>
     <!--
     Your HTML goes here. Visit purecss.io/layouts/ for some sample HTML code.
