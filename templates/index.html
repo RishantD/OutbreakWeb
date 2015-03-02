@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html ng-app="mainApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>A Small World</title>
+
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.css' rel='stylesheet' />
+    <link rel="stylesheet" type="text/css" href="static/css/stick.css">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+
+    <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; padding-bottom: 44px; overflow: hidden; width:100%;height: 100%; }
+    </style>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js' ></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.5/mapbox.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+    <script>
+        var app = angular.module('mainApp', [])
+	.controller('mainController', function($scope, $http){
+		$scope.month = 1;
+		L.mapbox.accessToken = 'pk.eyJ1IjoicmlzaGFudGQiLCJhIjoidEk0dGdZYyJ9.-ZMFVJwFh4HSYZMYHee7Gw';
+		var geocoder = L.mapbox.geocoder('mapbox.places'), map = L.mapbox.map('map', 'rishantd.lbc55bee').setView([38.50, -98.35], 5);
+        var markers = new L.MarkerClusterGroup();
+		$scope.loading = false;
+		$scope.getData = function(){
+			console.log("Start");
+			$scope.loading = true;
+			$http({method: "GET", url: "/"+$scope.search})
+			.success(function(data, status, headers, config){
+				$scope.loading = false;
+				console.log("End");
+				$scope.data = data;
+				$scope.render();	
+			});
+		}
+		$scope.isLoading = function(){return $scope.loading;}
+		$scope.changeMonth = function(num){
+			$scope.month = num;
+			$scope.render();
+		}
+		$scope.render = function(){
+			map.removeLayer(markers);
+  			markers.clearLayers();
+			for (i = 0; i < $scope.data.length; i++)
+			{
+				if (parseInt($scope.data[i].date) == $scope.month){	    
+					for (j = 0; j < $scope.data[i].count; j++){
+						geocoder.query($scope.data[i].zip, showMap);
+						function showMap(err, data) {
+							var marker = L.circle([data.latlng[0], data.latlng[1]], 5000, {
+								color: 'red',
+								fillColor: '#f03',
+								fillOpacity: 0.5
+							});
+							markers.addLayer(marker); 
+						}
+					}
+				}
+				else if($scope.month == 13)
+				{
+					for (j = 0; j < $scope.data[i].count; j++){
+						geocoder.query($scope.data[i].zip, showMap);
+						function showMap(err, data) {
+							var marker = L.circle([data.latlng[0], data.latlng[1]], 5000, {
+								color: 'red',
+								fillColor: '#f03',
+								fillOpacity: 0.5
+							});
+							markers.addLayer(marker); 
+						}
+					}
+				}		   
+			}
+      			map.addLayer(markers);
+		}
+	})
+	.directive('ngEnter', function () {
+	    return function (scope, element, attrs) {
+		element.bind("keydown keypress", function (event) {
+		    if(event.which === 13) {
+			scope.$apply(function (){
+			    scope.$eval(attrs.ngEnter);
+			});
+
+			event.preventDefault();
+		    }
+		});
+	    };
+	});
+        
+    </script>
+</head>
+
+<body ng-controller="mainController">
+    <style>
+        .search-ui {
+            position:absolute;
+            top:10px;
+            right:10px;
+            z-index:1000;
+        }
+    </style>
+    <div id="wrap">
+
+        <div id="main">
+            <div id='map'></div>
+            <input id='search' ng-model="search" class='search-ui' placeholder='Enter Disease' ng-enter="getData()" />
+        </div>
+
+    </div>
+
+    <div id="footer">
+        <div id='cssmenu'>
+            <ul>
+                <li ng-class="{'active': month == 1}"><a href='#' ng-click="changeMonth(1)"><span>January</span></a></li>
+                <li ng-class="{'active': month == 2}"><a href='#' ng-click="changeMonth(2)"><span>February</span></a></li>
+                <li ng-class="{'active': month == 3}"><a href='#' ng-click="changeMonth(3)"><span>March</span></a></li>
+                <li ng-class="{'active': month == 4}"><a href='#' ng-click="changeMonth(4)"><span>April</span></a></li>
+                <li ng-class="{'active': month == 5}"><a href='#' ng-click="changeMonth(5)"><span>May</span></a></li>
+                <li ng-class="{'active': month == 6}"><a href='#' ng-click="changeMonth(6)"><span>June</span></a></li>
+                <li ng-class="{'active': month == 7}"><a href='#' ng-click="changeMonth(7)"><span>July</span></a></li>
+                <li ng-class="{'active': month == 8}"><a href='#' ng-click="changeMonth(8)"><span>August</span></a></li>
+                <li ng-class="{'active': month == 9}"><a href='#' ng-click="changeMonth(9)"><span>September</span></a></li>
+                <li ng-class="{'active': month == 10}"><a href='#' ng-click="changeMonth(10)"><span>October</span></a></li>
+                <li ng-class="{'active': month == 11}"><a href='#' ng-click="changeMonth(11)"><span>November</span></a></li>
+                <li ng-class="{'active': month == 12}"><a href='#' ng-click="changeMonth(12)"><span>December</span></a></li>
+                <li class='last' ng-class="{'active': month == 13}"><a href='#' ng-click="changeMonth(13)"><span>Year</span></a></li>
+            </ul>
+        </div>
+    </div> 
+    <div ng-show="isLoading()" style="position: absolute; top: 0; left: 0; z-index: 2000; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center">
+    	<img src="/static/ajax-loader.gif" />
+    </div>
+    <!--
+    Your HTML goes here. Visit purecss.io/layouts/ for some sample HTML code.
+    -->
+</body>
+</html>
